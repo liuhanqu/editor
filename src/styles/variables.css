@@ -1,0 +1,29 @@
+:root {
+  --unit: 10px;
+
+  --color-text: #999;
+  --color-text-secondary: #666;
+
+  --preferred-font: 'Roboto', 'Helvetica', 'Arial', 'Microsoft Yahei', san-serif;
+  --font-size-big: calc(1.8 * var(--unit));
+  --font-size: calc(1.6 * var(--unit));
+  --font-size-small: calc(1.4 * var(--unit));
+  --font-size-tiny: calc(1.2 * var(--unit));
+
+  --z-index-highest: 300;
+  --z-index-higher: 200;
+  --z-index-high: 100;
+  --z-index-normal: 1;
+  --z-index-low: -100;
+  --z-index-lower: -200;
+
+  --color-primary: rgb(48, 63, 159);
+  --color-primary-contrast: #fff;
+
+  --animation-duration: 0.35s;
+  --animation-delay: calc(var(--animation-duration) / 5);
+  --animation-curve-fast-out-slow-in: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-curve-linear-out-slow-in: cubic-bezier(0, 0, 0.2, 1);
+  --animation-curve-fast-out-linear-in: cubic-bezier(0.4, 0, 1, 1);
+  --animation-curve-default: var(--animation-curve-fast-out-slow-in);
+}

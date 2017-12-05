@@ -1,0 +1,10 @@
+.wrapper {
+  position: absolute;
+  pointer-events: none;
+
+  & .cmp-wrapper {
+    height: 100%;
+    pointer-events: all;
+  }
+}
+
