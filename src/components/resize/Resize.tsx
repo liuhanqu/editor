@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { addEventsToDocument, removeEventsFromDocument } from 'utils/event';
-import { calcRotateDeg, getPositions, calcPosition } from 'utils/resize';
+import { calcRotateDeg, getSizeAndPositions, calcRect } from 'utils/resize';
 import { throttle } from 'utils/throttle';
 
 import './style.css';
@@ -9,6 +9,10 @@ import './style.css';
 const directionMap = ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'];
 const WAIT = 20;
 
+interface Point {
+  x: number;
+  y: number;
+}
 interface ResizeProps {
   rotate: number;
   directions: string[];
@@ -25,21 +29,18 @@ interface ResizeProps {
 interface ResizeState {
   scaling: boolean;
   direction: string;
-  startX: number;
-  startY: number;
-  centerX: number;
-  centerY: number;
-  referX: number;
-  referY: number;
-  width: number;
-  height: number;
+  start?: Point;
+  center?: Point;
+  ref?: Point;
+  width?: number;
+  height?: number;
 }
 
 class Resize extends React.Component<any, ResizeState> {
   throttleRotate: (evt: MouseEvent) => void;
   throttleScale: (evt: MouseEvent) => void;
 
-  resizeNode: HTMLElement | null;
+  resizeNode: HTMLElement;
 
   static defaultProps = {
     directions: directionMap,
@@ -50,14 +51,6 @@ class Resize extends React.Component<any, ResizeState> {
     this.state = {
       scaling: false,
       direction: '',
-      startX: NaN,
-      startY: NaN,
-      centerX: NaN,
-      centerY: NaN,
-      referX: NaN,
-      referY: NaN,
-      width: NaN,
-      height: NaN,
     };
     this.throttleRotate = throttle(this.handleRotate, WAIT);
     this.throttleScale = throttle(this.handleScale, WAIT);
@@ -101,8 +94,8 @@ class Resize extends React.Component<any, ResizeState> {
     }
     const direction = (evt.target as HTMLElement).getAttribute('data-direction') as string;
 
-    // { startX, startY, centerX, centerY , referX, referY, width, height }
-    const positions = getPositions(evt, this);
+    // { start, center , ref, width, height }
+    const positions = getSizeAndPositions(evt, this);
 
     this.setState({
       scaling: true,
@@ -117,7 +110,7 @@ class Resize extends React.Component<any, ResizeState> {
   };
 
   handleScale: React.MouseEventHandler<HTMLElement> = evt => {
-    const position = calcPosition(evt, this);
+    const position = calcRect(evt, this);
 
     if (this.props.onScale) {
       this.props.onScale(position);
@@ -130,12 +123,6 @@ class Resize extends React.Component<any, ResizeState> {
     }
     this.setState({
       direction: '',
-      startX: NaN,
-      startY: NaN,
-      centerX: NaN,
-      centerY: NaN,
-      referX: NaN,
-      referY: NaN,
       width: NaN,
       height: NaN,
     });
@@ -168,7 +155,12 @@ class Resize extends React.Component<any, ResizeState> {
   render() {
     const { directions, canRotate, rotate, style } = this.props;
     return (
-      <div className="operate" style={style} ref={node => (this.resizeNode = node)}>
+      <div
+        className="operate"
+        style={style}
+        ref={node => {
+          this.resizeNode = node as HTMLElement;
+        }}>
         {canRotate ? (
           <span className="rotate" onMouseDown={this.handleRotateStart}>
             <i className="icon icon-rotate" />
